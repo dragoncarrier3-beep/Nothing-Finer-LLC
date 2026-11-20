@@ -135,6 +135,8 @@ function log(actor: User, a: Omit<Activity, 'id' | 'at' | 'actorId' | 'actorName
 }
 
 // ---------------------------------------------------------------- auth (simulated)
+const signedIn = (u: User): Db => ({ ...db, sessionUserId: u.id, lastOwnerSignInAt: u.role === 'owner' ? nowIso() : db.lastOwnerSignInAt });
+
 export const auth = {
   async login(email: string, password: string) {
     await wait(350);
@@ -143,7 +145,7 @@ export const auth = {
     if (!u || u.password !== password) throw new DemoError('Incorrect email or password.');
     if (u.status === 'pending') throw new DemoError('This invitation hasn’t been accepted yet. Open it from the demo inbox first.');
     if (u.status === 'inactive') throw new DemoError('This account has been deactivated. Ask the owner to reactivate it.');
-    commit({ ...db, sessionUserId: u.id });
+    commit(signedIn(u));
     return u;
   },
 
@@ -151,7 +153,7 @@ export const auth = {
   switchTo(userId: string) {
     const u = userById(db, userId);
     if (!u || u.status !== 'active') throw new DemoError('That account is not active.');
-    commit({ ...db, sessionUserId: u.id });
+    commit(signedIn(u));
     return u;
   },
 
@@ -473,5 +475,11 @@ export const jobs = {
 export const demo = {
   reset() {
     commit(createSeed());
+  },
+  /** Start the acceptance checklist over without touching any records. */
+  restartRun() {
+    const ts = nowIso();
+    const owner = currentUser(db)?.role === 'owner';
+    commit({ ...db, runStartedAt: ts, lastOwnerSignInAt: owner ? ts : undefined });
   },
 };

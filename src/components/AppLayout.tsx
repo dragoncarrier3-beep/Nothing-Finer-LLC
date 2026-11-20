@@ -6,6 +6,8 @@ import { NextStep, UICtx, UIActions } from '@/contexts/UIContext';
 import AuthScreen from './fieldops/AuthScreen';
 import Shell from './fieldops/Shell';
 import DashboardView from './fieldops/DashboardView';
+import OverviewView from './fieldops/OverviewView';
+import { can } from '@/lib/constants';
 import JobsView from './fieldops/JobsView';
 import JobDetailView from './fieldops/JobDetailView';
 import CustomersView from './fieldops/CustomersView';
@@ -37,7 +39,8 @@ function parseHash(): View {
     case 'team': return { name: 'team' };
     case 'activity': return { name: 'activity' };
     case 'account': return { name: 'account' };
-    default: return { name: 'dashboard' };
+    case 'dashboard': return { name: 'dashboard' };
+    default: return { name: 'overview' };
   }
 }
 function toHash(v: View) {
@@ -45,7 +48,8 @@ function toHash(v: View) {
     case 'job': return `#/jobs/${encodeURIComponent(v.id)}`;
     case 'customer': return `#/customers/${encodeURIComponent(v.id)}`;
     case 'jobs': return v.status ? `#/jobs?status=${v.status}` : '#/jobs';
-    case 'dashboard': return '#/';
+    case 'overview': return '#/';
+    case 'dashboard': return '#/dashboard';
     default: return `#/${v.name}`;
   }
 }
@@ -112,7 +116,7 @@ const AppLayout: React.FC = () => {
     setFlow(null);
     setResetOpen(false);
     setLoginEmail('');
-    go({ name: 'dashboard' });
+    go({ name: 'overview' });
     toast.success('Demo reset', { description: 'The original sample data has been restored.' });
   };
 
@@ -128,23 +132,27 @@ const AppLayout: React.FC = () => {
   } else if (!user) {
     screen = <AuthScreen key={loginEmail} initialEmail={loginEmail} />;
   } else {
+    // The Sprint 1 review page is for the owner and admins; technicians land on their own dashboard.
+    const shown: View = view.name === 'overview' && !can(user.role, 'activity.view') ? { name: 'dashboard' } : view;
     let content: React.ReactNode;
-    switch (view.name) {
-      case 'jobs': content = <JobsView key={view.status ?? 'all'} initialStatus={view.status} />; break;
-      case 'job': content = <JobDetailView key={view.id} id={view.id} />; break;
+    switch (shown.name) {
+      case 'overview': content = <OverviewView />; break;
+      case 'dashboard': content = <DashboardView />; break;
+      case 'jobs': content = <JobsView key={shown.status ?? 'all'} initialStatus={shown.status} />; break;
+      case 'job': content = <JobDetailView key={shown.id} id={shown.id} />; break;
       case 'customers': content = <CustomersView />; break;
-      case 'customer': content = <CustomerDetailView key={view.id} id={view.id} />; break;
+      case 'customer': content = <CustomerDetailView key={shown.id} id={shown.id} />; break;
       case 'team': content = <TeamView />; break;
       case 'activity': content = <ActivityView />; break;
       case 'account': content = <AccountView />; break;
       default: content = <DashboardView />;
     }
-    screen = <Shell view={view}>{content}</Shell>;
+    screen = <Shell view={shown}>{content}</Shell>;
   }
 
   return (
     <UICtx.Provider value={ui}>
-      <DemoBar onOpenInbox={() => setInbox({ open: true })} onReset={() => setResetOpen(true)} onSwitched={() => { setFlow(null); go({ name: 'dashboard' }); }} />
+      <DemoBar onOpenInbox={() => setInbox({ open: true })} onReset={() => setResetOpen(true)} onSwitched={() => { setFlow(null); go({ name: 'overview' }); }} />
       {screen}
       {user && (
         <>
@@ -160,7 +168,7 @@ const AppLayout: React.FC = () => {
       )}
       <DemoInbox open={inbox.open} initialMessageId={inbox.messageId} onClose={() => setInbox({ open: false })} onOpenLink={openLink} />
       <ConfirmDialog open={resetOpen} title="Reset the demo?" confirmLabel="Reset demo" danger
-        body={<>This restores the original sample customers, jobs, notes and team, clears the demo inbox, and signs you out. Anything created during this session will be removed.</>}
+        body={<>This restores the original sample customers, jobs, notes and team, resets the demo inbox and the acceptance checklist, and signs you back in as the owner. Anything created during this session will be removed.</>}
         onConfirm={doReset} onCancel={() => setResetOpen(false)} />
     </UICtx.Provider>
   );

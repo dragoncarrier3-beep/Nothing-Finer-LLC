@@ -122,9 +122,14 @@ export interface Db {
   inbox: InboxMessage[];
   nextJobNumber: number;
   sessionUserId: string | null;
+  /** Start of the current acceptance-script run (seed time, or when the presenter restarts the run). */
+  runStartedAt: string;
+  /** Last time an owner signed in — drives the "Owner logs in" acceptance step. */
+  lastOwnerSignInAt?: string;
 }
 
 export type View =
+  | { name: 'overview' }
   | { name: 'dashboard' }
   | { name: 'jobs'; status?: JobStatus }
   | { name: 'job'; id: string }

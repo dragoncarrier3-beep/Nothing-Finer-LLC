@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Activity, Briefcase, Building2, LayoutDashboard, LogOut, UserCircle, Users, Zap } from 'lucide-react';
+import { Activity, Briefcase, Building2, ClipboardCheck, LayoutDashboard, LogOut, UserCircle, Users, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUI } from '@/contexts/UIContext';
@@ -9,6 +9,7 @@ import { Avatar, RoleBadge, cx } from './ui';
 
 type NavItem = { name: View['name']; label: string; short?: string; icon: React.ElementType; perm?: Permission };
 const NAV: NavItem[] = [
+  { name: 'overview', label: 'Sprint 1 review', short: 'Review', icon: ClipboardCheck, perm: 'activity.view' },
   { name: 'dashboard', label: 'Dashboard', short: 'Home', icon: LayoutDashboard },
   { name: 'jobs', label: 'Jobs', icon: Briefcase },
   { name: 'customers', label: 'Customers', icon: Building2, perm: 'customers.manage' },
@@ -47,7 +48,7 @@ export default function Shell({ view, children }: { view: View; children: React.
   const active = activeFor(view);
   const items = NAV.filter((n) => !n.perm || can(n.perm)).map((n) => (n.name === 'jobs' && !can('jobs.view_all') ? { ...n, label: 'My jobs' } : n));
 
-  const signOut = () => { setMenuOpen(false); logout(); go({ name: 'dashboard' }); toast.success('Logged out'); };
+  const signOut = () => { setMenuOpen(false); logout(); go({ name: 'overview' }); toast.success('Logged out'); };
 
   return (
     <div className="lg:flex">
@@ -116,11 +117,11 @@ export default function Shell({ view, children }: { view: View; children: React.
             const isActive = active === n.name;
             return (
               <button key={n.name} onClick={() => go({ name: n.name } as View)} aria-current={isActive ? 'page' : undefined}
-                className={cx('flex h-16 flex-col items-center justify-center gap-1 text-xs font-semibold', isActive ? 'text-navy-950' : 'text-stone-500')}>
+                className={cx('flex h-16 min-w-0 flex-col items-center justify-center gap-1 font-semibold', items.length > 5 ? 'text-[11px]' : 'text-xs', isActive ? 'text-navy-950' : 'text-stone-500')}>
                 <span className={cx('flex h-7 w-12 items-center justify-center rounded-full', isActive && 'bg-amber-100')}>
                   <n.icon className={cx('h-5 w-5', isActive ? 'text-amber-700' : '')} aria-hidden />
                 </span>
-                <span className="truncate">{n.short ?? n.label}</span>
+                <span className="max-w-full truncate px-0.5">{n.short ?? n.label}</span>
               </button>
             );
           })}

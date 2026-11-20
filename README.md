@@ -28,13 +28,14 @@ The page sets `noindex` so the demo URL isn't indexed by search engines.
 
 ## Presenting the demo
 
-- **Enter demo as owner** on the login screen (or log in with any sample account, password `FieldOps1`).
+- The link opens straight into the app as the owner, on the **Sprint 1 review** page. It maps every Sprint 1 scope item to a working screen and shows the client's acceptance script as a live checklist that ticks itself off from the activity log.
+- To show authentication, use **Show login screen** (or Log out). From there, **Enter demo as owner** or log in with any sample account, password `FieldOps1`.
 - The amber bar at the top holds presenter controls: **Switch account**, **Demo inbox**, **Reset demo**.
 - Data is saved in the browser's localStorage, so it survives a refresh. **Reset demo** restores the original sample data.
 
 ### Suggested five-minute script
 
-1. Enter as owner → Dashboard (counts, recent jobs, activity).
+1. Open the link → Sprint 1 review (scope + acceptance checklist), then the Dashboard.
 2. **Invite technician** → open the invitation from the demo inbox → accept it → return to the owner.
 3. **Add customer** → follow the **Add site** next step → follow the **Create job** next step, assign the new technician.
 4. Add an owner note on the job.

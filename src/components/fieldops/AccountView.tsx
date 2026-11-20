@@ -31,7 +31,7 @@ export default function AccountView() {
             <div className="flex flex-col gap-0.5 py-3 sm:flex-row sm:justify-between"><dt className="text-stone-500">Status</dt><dd className="font-medium text-navy-950">{USER_STATUS_LABEL[user.status]}</dd></div>
             <div className="flex flex-col gap-0.5 py-3 sm:flex-row sm:justify-between"><dt className="text-stone-500">Member since</dt><dd className="font-medium text-navy-950">{fmtDate(user.activatedAt ?? user.createdAt)}</dd></div>
           </dl>
-          <Button variant="secondary" className="mt-5 w-full sm:w-auto" onClick={() => { logout(); go({ name: 'dashboard' }); toast.success('Logged out'); }}>
+          <Button variant="secondary" className="mt-5 w-full sm:w-auto" onClick={() => { logout(); go({ name: 'overview' }); toast.success('Logged out'); }}>
             <LogOut className="h-4 w-4" aria-hidden /> Log out
           </Button>
         </Card>
