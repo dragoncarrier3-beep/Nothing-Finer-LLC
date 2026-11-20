@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Warm white surfaces, deep navy ink, restrained amber accent */
+    --background: 40 33% 97%;
+    --foreground: 220 45% 13%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 45% 13%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 45% 13%;
+    --primary: 219 47% 15%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 36 20% 94%;
+    --secondary-foreground: 220 45% 13%;
+    --muted: 36 20% 94%;
+    --muted-foreground: 220 9% 42%;
+    --accent: 38 92% 50%;
+    --accent-foreground: 220 45% 13%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 30 12% 87%;
+    --input: 30 12% 80%;
+    --ring: 38 92% 50%;
+    --radius: 0.5rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-paper font-sans text-navy-950 antialiased;
+  }
+
+  /* Visible keyboard focus everywhere, amber to match the brand */
+  :focus-visible {
+    @apply outline-none ring-2 ring-amber-500 ring-offset-2 ring-offset-paper;
+  }
+}
